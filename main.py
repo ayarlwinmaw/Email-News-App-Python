@@ -7,8 +7,15 @@ from send_email import send_email
 load_dotenv()
 api_key = os.getenv("NEWS_API_KEY")
 
+topic = "AI"
+
 # URL for newsapi
-url = f"https://newsapi.org/v2/everything?q=tesla&from=2025-09-16&sortBy=publishedAt&apiKey={api_key}"
+url = (f"https://newsapi.org/v2/everything?"
+       f"q={topic}&"
+       # f"from=2025-09-16&"
+       f"sortBy=publishedAt&"
+       f"apiKey={api_key}&"
+       f"language=en")
 
 # Make request
 request = requests.get(url)
@@ -16,13 +23,21 @@ request = requests.get(url)
 # Get a dictionary of articles
 content = request.json()
 
-# print(content["articles"])
+# print(content["articles"]) # Breakpoint to inspect the json data
 
 # Access the article titles and description
-body = ""
-for article in content["articles"]:
-    if article["title"] is not None:
-        body = body + article["title"] + "\n" + article["description"] + 2*"\n"
+body = f"Subject:Today News about {topic}!\n"
+for article in content["articles"][:20]:
+    title = article.get("title")
+    description = article.get("description")
+    article_url = article.get("url")
+
+    if title and description:
+        body += (f"{title}\n"
+                 f"{description}\n"
+                 f"{article_url}\n"
+                 f"\n")
 
 body = body.encode("utf8")
 send_email(message=body)
+# print(body)

@@ -13,6 +13,10 @@ def send_email(message):
     receiver = os.getenv("RECEIVER_EMAIL")
     context = ssl.create_default_context()
 
+    # print(username, password, receiver)
     with smtplib.SMTP_SSL(host, port, context=context) as server:
         server.login(username, password)
         server.sendmail(username, receiver, message)
+
+# if __name__ == "__main__":
+#     send_email("Hello World!")
